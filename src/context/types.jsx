@@ -1,0 +1,5 @@
+export const GET_ORDERS = 'GET_ORDERS';
+export const GET_SECTORS = 'GET_SECTORS';
+export const GET_EMPLEADOS = 'GET_EMPLEADOS';
+export const HANDLE_ACTIVE_MODAL = 'HANDLE_ACTIVE_MODAL'
+export const GET_CODIGOS = 'GET_CODIGOS'

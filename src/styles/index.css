@@ -1,0 +1,6 @@
+td, th {
+    padding: 0.25rem !important;
+}
+td input, select {
+    border: none ;
+}
