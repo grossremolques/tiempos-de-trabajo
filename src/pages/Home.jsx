@@ -16,7 +16,6 @@ export default function Home() {
     getEmpleados,
     postTasks,
     handleModalShow,
-    handleModalClose,
   } = useGlobal();
   useEffect(() => {
     getOrders();
@@ -147,7 +146,7 @@ export default function Home() {
                   tipo_orden: "",
                   nro: "",
                   cod_tarea: "",
-                  inicio: watch(`tasks.${fields.length -1}.fin`),
+                  inicio: watch(`tasks.${fields.length - 1}.fin`),
                   fin: "",
                   subsector: "",
                   desvio: "No aplica",
@@ -237,7 +236,15 @@ export default function Home() {
                       <Form.Control
                         size={size}
                         type="time"
-                        {...register(`tasks.${index}.fin`, { required: true })}
+                        {...register(`tasks.${index}.fin`, {
+                          required: true,
+                          validate: (value) => {
+                            return (
+                              watch(`tasks.${index}.inicio`) != value ||
+                              "No pueden ser iguales los tiempos de inico y fin"
+                            );
+                          },
+                        })}
                       />
                     </td>
                     <td>
@@ -279,12 +286,12 @@ export default function Home() {
                     <td>
                       <Form.Select
                         size={size}
-                        {...register(`tasks.${index}.proceso`, {
+                        {...register(`tasks.${index}.reproceso`, {
                           required: true,
                         })}
                       >
-                        <option value="No">No</option>
-                        <option value="Sí">Sí</option>
+                        <option value={false}>No</option>
+                        <option value={true}>Sí</option>
                       </Form.Select>
                     </td>
                     <td>
@@ -302,6 +309,7 @@ export default function Home() {
               })}
             </tbody>
           </Table>
+          {errors.tasks && console.log(errors.tasks)}
           {errors.tasks && (
             <TextWarningForm message="Todos los campos son obligatorios" />
           )}

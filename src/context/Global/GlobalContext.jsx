@@ -10,8 +10,8 @@ const OrdenesGoogleSheet = new GoogleSheet({
 });
 const TasksGoogleSheet = new GoogleSheet({
   sheetId: import.meta.env.VITE_SS_REG106,
-  nameSheet: "Propuesta",
-  range: `Propuesta!A1:ZZZ`,
+  nameSheet: "REG 106",
+  range: `REG 106!A1:ZZZ`,
   rowHead: 1,
 });
 const SectoresGoogleSheet = new GoogleSheet({
