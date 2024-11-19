@@ -1,11 +1,10 @@
-import { Form, Row, Col, Table, Button } from "react-bootstrap/";
+import { Form, Row, Col, Table, Button, InputGroup } from "react-bootstrap/";
 import { useForm, useFieldArray } from "react-hook-form";
 import { useGlobal } from "../context/Global/GlobalContext";
 import { useEffect, useState } from "react";
 import TextWarningForm from "../components/TextWarningForm";
 import { ModalComponent } from "../components/ModalComponent";
 import LoadingIcon from "../components/LoaderIcon";
-import { useNavigate } from "react-router-dom";
 export default function Home() {
   const [subsectores, setSubsectores] = useState([]);
   const {
@@ -126,6 +125,23 @@ export default function Home() {
   const onError = (errors) => {
     console.error("Form errors:", errors);
   };
+  const handleAddRows = () => {
+    const num = watch('numFilas');
+    for (let i = 0; i < num-1; i++) {
+      append("tasks", {
+        tipo_orden: "",
+        nro: "",
+        cod_tarea: "",
+        inicio: "07:00",
+        fin: "",
+        subsector: "",
+        desvio: "",
+        cant_pieza: "",
+        reproceso: false,
+      });
+
+    }
+  }
   return (
     <>
       <Form className="mt-5" onSubmit={handleSubmit(onSubmit, onError)}>
@@ -197,9 +213,30 @@ export default function Home() {
         </Row>
         <hr />
         <Row className="g-1">
-          <div className="d-flex justify-content-between">
+          <Col sm={3}>
             <h3>Tiempos de trabajo</h3>
-            <button
+          </Col>
+          <Col sm={'2'} className="offset-7">
+          <InputGroup>
+        <Form.Control
+          placeholder="Filas"
+          type="number"
+          {...register('numFilas')}
+        />
+        <Button variant="outline-secondary" onClick={handleAddRows}>
+        {" "}
+        Agregar <i className="bi bi-plus-lg"></i>
+        </Button>
+      </InputGroup>
+          </Col>
+          {/*<div className="d-flex justify-content-between">
+            <h3>Tiempos de trabajo</h3>
+            <Form.Control
+              size={size}
+              type="text"
+              placeholder="jo"
+            />
+             <button
               type="button"
               onClick={() => {
                 append({
@@ -218,8 +255,8 @@ export default function Home() {
             >
               {" "}
               Agregar <i className="bi bi-plus-lg"></i>
-            </button>
-          </div>
+            </button> 
+          </div>*/}
 
           <Table className="mt-3" size="sm">
             <thead>
