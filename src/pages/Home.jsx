@@ -7,8 +7,6 @@ import { ModalComponent } from "../components/ModalComponent";
 import LoadingIcon from "../components/LoaderIcon";
 import { useNavigate } from "react-router-dom";
 export default function Home() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const navigate = useNavigate();
   const [subsectores, setSubsectores] = useState([]);
   const {
     orders,
@@ -38,7 +36,7 @@ export default function Home() {
         subsector: "",
         desvio: "",
         cant_pieza: "",
-        reproceso: "No",
+        reproceso: false,
       },
     ],
   };
@@ -213,7 +211,7 @@ export default function Home() {
                   subsector: "",
                   desvio: "",
                   cant_pieza: "",
-                  reproceso: "No",
+                  reproceso: false,
                 });
               }}
               className="btn btn-success"

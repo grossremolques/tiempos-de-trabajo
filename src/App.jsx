@@ -5,8 +5,10 @@ import CodigoTareas from "./pages/CodigosTareas"
 import { Layout } from "./components/Layout"
 import { AuthContextProvider } from "./context/AuthContext"
 import { GlobalProvider } from "./context/Global/GlobalContext"
+import packageJson from "../package.json"
 
 function App() {
+  const {version} = packageJson
   const router = createHashRouter([
     {path:'/', element: <Layout/>, children: [
       {path: '/', element: <Home/>},
@@ -19,6 +21,7 @@ function App() {
     <AuthContextProvider>
       <GlobalProvider>
         <RouterProvider router={router} />
+        <span className="small" style={{position: 'absolute', bottom: '10px', left: '10px'}}>Versión: {version}</span>
       </GlobalProvider>
     </AuthContextProvider>
   )
