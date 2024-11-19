@@ -5,7 +5,10 @@ import { useEffect, useState } from "react";
 import TextWarningForm from "../components/TextWarningForm";
 import { ModalComponent } from "../components/ModalComponent";
 import LoadingIcon from "../components/LoaderIcon";
+import { useNavigate } from "react-router-dom";
 export default function Home() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const navigate = useNavigate();
   const [subsectores, setSubsectores] = useState([]);
   const {
     orders,
@@ -23,6 +26,22 @@ export default function Home() {
     getEmpleados();
   }, []);
   const size = "sm";
+  const STORAGE_KEY = "form-data";
+  const savedData = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
+    tasks: [
+      {
+        tipo_orden: "",
+        nro: "",
+        cod_tarea: "",
+        inicio: "07:00",
+        fin: "",
+        subsector: "",
+        desvio: "",
+        cant_pieza: "",
+        reproceso: "No",
+      },
+    ],
+  };
   const {
     register,
     handleSubmit,
@@ -32,36 +51,79 @@ export default function Home() {
     setValue,
     reset,
   } = useForm({
-    defaultValues: {
-      tasks: [
-        {
-          tipo_orden: "",
-          nro: "",
-          cod_tarea: "",
-          inicio: "07:00",
-          fin: "",
-          subsector: "",
-          desvio: "No aplica",
-          cant_pieza: "",
-          reproceso: "No",
-        },
-      ],
-    },
+    defaultValues: savedData,
   });
+  useEffect(() => {
+    // Solo aplicar valores del localStorage si las opciones ya están disponibles
+    if (
+      empleados.length > 0 &&
+      sectors.produccion.length > 0 &&
+      orders.length > 0
+    ) {
+      Object.keys(savedData).forEach((key) => {
+        setValue(key, savedData[key]);
+        if (key === "tasks") {
+          fields.forEach((item, index) => {
+            setValue(
+              `tasks.${index}.subsector`,
+              savedData.tasks[index].subsector
+            );
+            setValue(
+              `tasks.${index}.tipo_orden`,
+              savedData.tasks[index].tipo_orden
+            );
+          });
+        }
+      });
+    }
+  }, [empleados, sectors.produccion, orders, setValue]);
+  const watchedValues = watch();
+  //Guarda las actualizaciones en el localStorage
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(watchedValues))
+  }, [watchedValues]);
+
   const { fields, append, remove } = useFieldArray({
     control,
     name: "tasks",
   });
+  useEffect(() => {
+    // Actualizar los subsectores basados en el sector inicial cargad
+    const currentSector = watch("sector");
+    if (currentSector) {
+      const filteredSubsectores = sectors.data.filter(
+        (item) => item.sector === currentSector
+      );
+      setSubsectores(filteredSubsectores);
+    }
+  }, [watch("sector"), sectors.data]);
+
   const onSubmit = async (data) => {
     handleModalShow("modal-loading");
     const res = await postTasks(data);
     if (res.some((item) => item === undefined)) {
       handleModalShow("modal-error");
     } else {
+      localStorage.removeItem(STORAGE_KEY);
+      reset({
+        alias: '',
+        sector: '',
+        tasks: [
+          {
+            tipo_orden: "",
+            nro: "",
+            cod_tarea: "",
+            inicio: "07:00",
+            fin: "",
+            subsector: "",
+            desvio: "",
+            cant_pieza: "",
+            reproceso: false,
+          },
+        ],
+      });
       handleModalShow("modal-success");
-      reset();
     }
-    console.log(res);
   };
   const onError = (errors) => {
     console.error("Form errors:", errors);
@@ -149,7 +211,7 @@ export default function Home() {
                   inicio: watch(`tasks.${fields.length - 1}.fin`),
                   fin: "",
                   subsector: "",
-                  desvio: "No aplica",
+                  desvio: "",
                   cant_pieza: "",
                   reproceso: "No",
                 });
@@ -209,8 +271,6 @@ export default function Home() {
                         type="text"
                         {...register(`tasks.${index}.nro`, {
                           required: true,
-                          disabled:
-                            watch(`tasks.${index}.tipo_orden`) === "N/A",
                         })}
                       />
                     </td>
@@ -250,6 +310,7 @@ export default function Home() {
                     <td>
                       <Form.Select
                         size={size}
+                        /* value={savedData.tasks[index]?.subsector} */
                         {...register(`tasks.${index}.subsector`, {
                           required: true,
                         })}
@@ -270,7 +331,6 @@ export default function Home() {
                         size={size}
                         type="text"
                         {...register(`tasks.${index}.desvio`, {
-                          required: true,
                         })}
                       />
                     </td>
@@ -309,7 +369,6 @@ export default function Home() {
               })}
             </tbody>
           </Table>
-          {errors.tasks && console.log(errors.tasks)}
           {errors.tasks && (
             <TextWarningForm message="Todos los campos son obligatorios" />
           )}
