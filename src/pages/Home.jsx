@@ -127,7 +127,7 @@ export default function Home() {
   };
   const handleAddRows = () => {
     const num = watch('numFilas');
-    for (let i = 0; i < num-1; i++) {
+    for (let i = 0; i < num; i++) {
       append("tasks", {
         tipo_orden: "",
         nro: "",
